@@ -1,11 +1,14 @@
-"""SQLAlchemy models package.
+"""All SQLAlchemy models for Alembic discovery."""
 
-No models are defined yet. The shared base and metadata are exposed for
-future model definitions and Alembic migration generation.
-"""
-
-from app.core.database import Base
-
-metadata = Base.metadata
+from app.models import (
+    artwork,  # noqa: F401
+    catalogue,  # noqa: F401
+    episode,  # noqa: F401
+    publish_run,  # noqa: F401
+    season,  # noqa: F401
+    show,  # noqa: F401
+    user,  # noqa: F401
+)
+from app.models.base import Base, metadata
 
 __all__ = ["Base", "metadata"]
