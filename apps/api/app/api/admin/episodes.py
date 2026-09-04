@@ -6,14 +6,16 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
+from app.core.deps import require_editor
 from app.schemas.episode import EpisodeCreate, EpisodeResponse, EpisodeUpdate
+from app.models.user import User
 from app.services import episode_service
 
 router = APIRouter(tags=["Admin Episodes"])
 
 
 @router.get("/seasons/{season_id}/episodes", response_model=list[EpisodeResponse])
-def list_episodes(season_id: int, db: Session = Depends(get_db)):
+def list_episodes(season_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_editor)):
     episodes = episode_service.list_for_season(db, season_id)
     return [EpisodeResponse.model_validate(e) for e in episodes]
 
@@ -23,7 +25,7 @@ def list_episodes(season_id: int, db: Session = Depends(get_db)):
     response_model=EpisodeResponse,
     status_code=status.HTTP_201_CREATED,
 )
-def create_episode(season_id: int, data: EpisodeCreate, db: Session = Depends(get_db)):
+def create_episode(season_id: int, data: EpisodeCreate, db: Session = Depends(get_db), current_user: User = Depends(require_editor)):
     try:
         episode = episode_service.create(db, season_id, data)
     except ValueError as e:
@@ -37,7 +39,7 @@ def create_episode(season_id: int, data: EpisodeCreate, db: Session = Depends(ge
 
 
 @router.get("/episodes/{episode_id}", response_model=EpisodeResponse)
-def get_episode(episode_id: int, db: Session = Depends(get_db)):
+def get_episode(episode_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_editor)):
     episode = episode_service.get(db, episode_id)
     if not episode:
         raise HTTPException(status_code=404, detail="Episode not found")
@@ -45,7 +47,7 @@ def get_episode(episode_id: int, db: Session = Depends(get_db)):
 
 
 @router.patch("/episodes/{episode_id}", response_model=EpisodeResponse)
-def update_episode(episode_id: int, data: EpisodeUpdate, db: Session = Depends(get_db)):
+def update_episode(episode_id: int, data: EpisodeUpdate, db: Session = Depends(get_db), current_user: User = Depends(require_editor)):
     try:
         episode = episode_service.update(db, episode_id, data)
     except ValueError as e:
@@ -59,7 +61,7 @@ def update_episode(episode_id: int, data: EpisodeUpdate, db: Session = Depends(g
 
 
 @router.delete("/episodes/{episode_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_episode(episode_id: int, db: Session = Depends(get_db)):
+def delete_episode(episode_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_editor)):
     try:
         episode_service.delete(db, episode_id)
     except ValueError as e:

@@ -6,10 +6,10 @@ import enum
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import CheckConstraint, DateTime, Enum, ForeignKey, Index, Integer, String, func
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Index, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import Base
+from app.models.base import Base, enum_type
 
 if TYPE_CHECKING:
     from app.models.episode import Episode
@@ -49,7 +49,7 @@ class Artwork(Base):
     episode_id: Mapped[int | None] = mapped_column(
         ForeignKey("episodes.id", ondelete="CASCADE"), nullable=True
     )
-    type: Mapped[ArtworkType] = mapped_column(Enum(ArtworkType), nullable=False)
+    type: Mapped[ArtworkType] = mapped_column(enum_type(ArtworkType), nullable=False)
     storage_key: Mapped[str] = mapped_column(String(512), nullable=False)
     original_filename: Mapped[str] = mapped_column(String(255), nullable=False)
     mime_type: Mapped[str] = mapped_column(String(100), nullable=False)

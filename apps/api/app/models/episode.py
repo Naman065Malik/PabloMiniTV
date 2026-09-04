@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING
 from sqlalchemy import (
     CheckConstraint,
     DateTime,
-    Enum,
     ForeignKey,
     Index,
     Integer,
@@ -19,7 +18,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import Base
+from app.models.base import Base, enum_type
 
 if TYPE_CHECKING:
     from app.models.artwork import Artwork
@@ -61,7 +60,7 @@ class Episode(Base):
     language: Mapped[str] = mapped_column(String(10), nullable=False)
     content_group: Mapped[str] = mapped_column(String(100), nullable=False)
     status: Mapped[EpisodeStatus] = mapped_column(
-        Enum(EpisodeStatus), default=EpisodeStatus.DRAFT, nullable=False, index=True
+        enum_type(EpisodeStatus), default=EpisodeStatus.DRAFT, nullable=False, index=True
     )
     video_storage_key: Mapped[str | None] = mapped_column(String(512), nullable=True)
     created_at: Mapped[datetime] = mapped_column(

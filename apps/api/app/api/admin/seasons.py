@@ -7,13 +7,15 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.schemas.season import SeasonCreate, SeasonResponse, SeasonUpdate
+from app.core.deps import require_editor
+from app.models.user import User
 from app.services import season_service
 
 router = APIRouter(tags=["Admin Seasons"])
 
 
 @router.get("/shows/{show_id}/seasons", response_model=list[SeasonResponse])
-def list_seasons(show_id: int, db: Session = Depends(get_db)):
+def list_seasons(show_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_editor)):
     seasons = season_service.list_for_show(db, show_id)
     return [SeasonResponse.model_validate(s) for s in seasons]
 
@@ -21,7 +23,7 @@ def list_seasons(show_id: int, db: Session = Depends(get_db)):
 @router.post(
     "/shows/{show_id}/seasons", response_model=SeasonResponse, status_code=status.HTTP_201_CREATED
 )
-def create_season(show_id: int, data: SeasonCreate, db: Session = Depends(get_db)):
+def create_season(show_id: int, data: SeasonCreate, db: Session = Depends(get_db), current_user: User = Depends(require_editor)):
     try:
         season = season_service.create(db, show_id, data)
     except ValueError as e:
@@ -35,7 +37,7 @@ def create_season(show_id: int, data: SeasonCreate, db: Session = Depends(get_db
 
 
 @router.get("/seasons/{season_id}", response_model=SeasonResponse)
-def get_season(season_id: int, db: Session = Depends(get_db)):
+def get_season(season_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_editor)):
     season = season_service.get(db, season_id)
     if not season:
         raise HTTPException(status_code=404, detail="Season not found")
@@ -43,7 +45,7 @@ def get_season(season_id: int, db: Session = Depends(get_db)):
 
 
 @router.patch("/seasons/{season_id}", response_model=SeasonResponse)
-def update_season(season_id: int, data: SeasonUpdate, db: Session = Depends(get_db)):
+def update_season(season_id: int, data: SeasonUpdate, db: Session = Depends(get_db), current_user: User = Depends(require_editor)):
     try:
         season = season_service.update(db, season_id, data)
     except ValueError as e:
@@ -57,7 +59,7 @@ def update_season(season_id: int, data: SeasonUpdate, db: Session = Depends(get_
 
 
 @router.delete("/seasons/{season_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_season(season_id: int, db: Session = Depends(get_db)):
+def delete_season(season_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_editor)):
     try:
         season_service.delete(db, season_id)
     except ValueError as e:

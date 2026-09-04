@@ -6,10 +6,10 @@ import enum
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, Enum, ForeignKey, Index, Integer, String, Text, func
+from sqlalchemy import DateTime, ForeignKey, Index, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import Base
+from app.models.base import Base, enum_type
 
 if TYPE_CHECKING:
     from app.models.catalogue import CatalogueVersion
@@ -41,7 +41,7 @@ class PublishRun(Base):
         ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )
     status: Mapped[PublishRunStatus] = mapped_column(
-        Enum(PublishRunStatus),
+        enum_type(PublishRunStatus),
         default=PublishRunStatus.DRAFT,
         nullable=False,
     )
@@ -52,7 +52,7 @@ class PublishRun(Base):
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
     catalogue_version_id: Mapped[int | None] = mapped_column(
-        ForeignKey("catalogue_versions.id"), nullable=True
+        ForeignKey("catalogue_versions.id", ondelete="SET NULL"), nullable=True
     )
     shows_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
     episodes_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
@@ -97,7 +97,7 @@ class PublishRunShow(Base):
         primary_key=True,
     )
     show_id: Mapped[int] = mapped_column(
-        ForeignKey("shows.id", ondelete="CASCADE"),
+        ForeignKey("shows.id"),
         primary_key=True,
     )
 
@@ -106,7 +106,7 @@ class PublishRunShow(Base):
     status: Mapped[str] = mapped_column(String(50), nullable=False)
 
     publish_run: Mapped[PublishRun] = relationship(back_populates="shows")
-    show: Mapped[Show] = relationship()
+    show: Mapped[Show] = relationship(back_populates="publish_run_shows")
 
     def __repr__(self) -> str:
         return f"<PublishRunShow publish_run_id={self.publish_run_id} show_id={self.show_id}>"
