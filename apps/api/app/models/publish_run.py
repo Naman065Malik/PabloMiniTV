@@ -37,17 +37,23 @@ class PublishRun(Base):
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    created_by: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    created_by: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
     status: Mapped[PublishRunStatus] = mapped_column(
         Enum(PublishRunStatus),
         default=PublishRunStatus.DRAFT,
         nullable=False,
     )
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
-    catalogue_version_id: Mapped[int | None] = mapped_column(ForeignKey("catalogue_versions.id"), nullable=True)
+    catalogue_version_id: Mapped[int | None] = mapped_column(
+        ForeignKey("catalogue_versions.id"), nullable=True
+    )
     shows_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
     episodes_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
@@ -62,7 +68,7 @@ class PublishRun(Base):
     )
     catalogue_version: Mapped[CatalogueVersion | None] = relationship(
         "CatalogueVersion",
-        back_populates="publish_run",
+        foreign_keys=[catalogue_version_id],
     )
 
     def __repr__(self) -> str:

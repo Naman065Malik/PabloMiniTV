@@ -43,8 +43,12 @@ class Artwork(Base):
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    show_id: Mapped[int | None] = mapped_column(ForeignKey("shows.id", ondelete="CASCADE"), nullable=True)
-    episode_id: Mapped[int | None] = mapped_column(ForeignKey("episodes.id", ondelete="CASCADE"), nullable=True)
+    show_id: Mapped[int | None] = mapped_column(
+        ForeignKey("shows.id", ondelete="CASCADE"), nullable=True
+    )
+    episode_id: Mapped[int | None] = mapped_column(
+        ForeignKey("episodes.id", ondelete="CASCADE"), nullable=True
+    )
     type: Mapped[ArtworkType] = mapped_column(Enum(ArtworkType), nullable=False)
     storage_key: Mapped[str] = mapped_column(String(512), nullable=False)
     original_filename: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -52,8 +56,12 @@ class Artwork(Base):
     file_size_bytes: Mapped[int] = mapped_column(Integer, nullable=False)
     width: Mapped[int | None] = mapped_column(Integer, nullable=True)
     height: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
+    )
 
     show: Mapped[Show | None] = relationship(back_populates="artworks", single_parent=True)
     episode: Mapped[Episode | None] = relationship(back_populates="artworks", single_parent=True)

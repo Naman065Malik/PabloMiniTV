@@ -31,11 +31,15 @@ class CatalogueVersion(Base):
     version_number: Mapped[int] = mapped_column(Integer, unique=True, nullable=False)
     storage_key: Mapped[str] = mapped_column(String(512), nullable=False)
     checksum: Mapped[str] = mapped_column(String(128), nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
 
+    # This is the run that produced this immutable version. It is distinct
+    # from PublishRun.catalogue_version, which points to the selected result.
     publish_run: Mapped[PublishRun | None] = relationship(
         "PublishRun",
-        back_populates="catalogue_version",
+        foreign_keys=[publish_run_id],
     )
 
 
@@ -43,16 +47,16 @@ class CatalogueState(Base):
     """Tracks which catalogue version is currently live."""
 
     __tablename__ = "catalogue_state"
-    __table_args__ = (
-        CheckConstraint("id = 1", name="ck_catalogue_state_single_row"),
-    )
+    __table_args__ = (CheckConstraint("id = 1", name="ck_catalogue_state_single_row"),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
     current_version_id: Mapped[int | None] = mapped_column(
         ForeignKey("catalogue_versions.id", ondelete="SET NULL"),
         nullable=True,
     )
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
 
     current_version: Mapped[CatalogueVersion | None] = relationship(
         "CatalogueVersion",
