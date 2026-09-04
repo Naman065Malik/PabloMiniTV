@@ -1,0 +1,13 @@
+# Alembic
+
+This directory contains Alembic configuration for the Peblo TV Mini backend.
+
+Run migrations from the project root:
+
+```bash
+cd apps/api
+alembic upgrade head
+alembic revision -m "description of change"
+```
+
+No migration scripts exist yet because database models have not been designed.
