@@ -150,3 +150,14 @@ def test_episode_validation_and_nonexistent_season(client: TestClient) -> None:
         json={"title": "Missing season", "language": "en", "content_group": "missing"},
     )
     assert missing_season_response.status_code == 404
+
+
+def test_auth_login(client: TestClient) -> None:
+    resp = client.post("/api/auth/login", json={"email": "admin@peblo.local", "password": "admin-password"})
+    assert resp.status_code == 200
+    assert "access_token" in resp.json()
+
+
+def test_auth_unauthenticated_admin_shows(client: TestClient) -> None:
+    resp = client.get("/api/admin/shows")
+    assert resp.status_code == 401
