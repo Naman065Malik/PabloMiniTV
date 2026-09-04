@@ -8,6 +8,8 @@ class LocalStorage(StorageProtocol):
         self.base_path = base_path
         import os
         os.makedirs(base_path, exist_ok=True)
+        # Public asset endpoint can serve from this base
+        # Not exposing internal paths to clients
 
     def _path(self, key: str) -> str:
         import os
