@@ -2,14 +2,15 @@
 from __future__ import annotations
 
 import json
+import os
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.orm import Session
 
-from app.core.database import get_db
-from app.models.catalogue import CatalogueVersion, CatalogueState
-from app.storage.local import LocalStorage
 from app.core.config import settings
+from app.core.database import get_db
+from app.models.catalogue import CatalogueState, CatalogueVersion
+from app.storage.local import LocalStorage
 
 router = APIRouter(prefix="/catalog", tags=["catalog"])
 
@@ -22,10 +23,13 @@ def _load_current_catalogue(db: Session) -> dict:
     if not version:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Catalogue version not found.")
     storage = LocalStorage(settings.local_storage_path)
-    if not storage.exists(version.storage_key):
+    storage_key = version.storage_key
+    if os.path.isabs(storage_key):
+        storage_key = os.path.relpath(storage_key, settings.local_storage_path)
+    if not storage.exists(storage_key):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Catalogue storage missing.")
     try:
-        raw = storage.get(version.storage_key)
+        raw = storage.get(storage_key)
         return json.loads(raw.decode("utf-8"))
     except Exception:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Catalogued source is malformed.")
@@ -35,6 +39,20 @@ def _load_current_catalogue(db: Session) -> dict:
 def get_catalogue(db: Session = Depends(get_db)):
     return _load_current_catalogue(db)
 
+
+@router.get("/catalog/assets/{storage_key:path}")
+def get_artwork_asset(storage_key: str, db: Session = Depends(get_db)):
+    storage = LocalStorage(settings.local_storage_path)
+    try:
+        key_path = storage_key if not storage_key.startswith("/") else storage_key.lstrip("/")
+        from app.models.artwork import Artwork
+        artwork = db.query(Artwork).filter(Artwork.storage_key == key_path).first()
+        if not artwork:
+            raise FileNotFoundError(key_path)
+        data = storage.get(key_path)
+        return Response(content=data, media_type=artwork.mime_type)
+    except Exception:
+        raise HTTPException(status_code=404, detail="Artwork not found")
 
 @router.get("/catalog/search")
 def search_catalogue(

@@ -4,4 +4,4 @@ import { validationReportKey } from './useValidationReport'
 
 export const publishHistoryKey = ['publish-history'] as const
 export function usePublishHistory(enabled = true) { return useQuery({ queryKey: publishHistoryKey, queryFn: listPublishRuns, enabled }) }
-export function usePublishCatalogue() { const client = useQueryClient(); return useMutation({ mutationFn: publishCatalogue, onSuccess: () => { void client.invalidateQueries({ queryKey: publishHistoryKey }); void client.invalidateQueries({ queryKey: validationReportKey }) } }) }
+export function usePublishCatalogue() { const client = useQueryClient(); return useMutation({ mutationFn: publishCatalogue, onSuccess: () => { void client.invalidateQueries({ queryKey: publishHistoryKey }); void client.invalidateQueries({ queryKey: validationReportKey }) }, onError: () => { void client.invalidateQueries({ queryKey: publishHistoryKey }); void client.invalidateQueries({ queryKey: validationReportKey }) } }) }

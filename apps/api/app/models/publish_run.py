@@ -51,6 +51,7 @@ class PublishRun(Base):
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    validation_report: Mapped[str | None] = mapped_column(Text, nullable=True)
     catalogue_version_id: Mapped[int | None] = mapped_column(
         ForeignKey("catalogue_versions.id", ondelete="SET NULL"), nullable=True
     )

@@ -18,6 +18,7 @@ class ShowCreate(BaseModel):
 
 class ShowUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=255)
+    status: str | None = Field(default=None, pattern="^(draft|published|archived)$")
     description: str | None = Field(default=None, max_length=5000)
     section: str | None = Field(default=None, max_length=100)
     category: str | None = Field(default=None, max_length=100)

@@ -65,8 +65,8 @@ def upload_show_artwork(
     if not db.query(Show).filter(Show.id == show_id).first():
         raise HTTPException(status_code=404, detail="Show not found")
     try:
-        artwork_type_enum = ArtworkType[artwork_type.upper()]
-    except KeyError:
+        artwork_type_enum = ArtworkType(artwork_type.lower())
+    except ValueError:
         raise HTTPException(status_code=400, detail="Unknown artwork type.")
     data = _read_file_safe(file)
     try:
@@ -127,8 +127,8 @@ def upload_episode_artwork(
     if not db.query(Episode).filter(Episode.id == episode_id).first():
         raise HTTPException(status_code=404, detail="Episode not found")
     try:
-        artwork_type_enum = ArtworkType[artwork_type.upper()]
-    except KeyError:
+        artwork_type_enum = ArtworkType(artwork_type.lower())
+    except ValueError:
         raise HTTPException(status_code=400, detail="Unknown artwork type.")
     data = _read_file_safe(file)
     try:

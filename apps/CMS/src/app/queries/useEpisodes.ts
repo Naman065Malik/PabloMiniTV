@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiFetch } from '../api/client'
-import { createEpisode, deleteSeason, getEpisode, listEpisodes, listSeasons, createSeason, updateSeason, updateEpisode, type EpisodeInput } from '../api/episodes'
+import { createEpisode, deleteSeason, getEpisode, listEpisodeArtworks, listEpisodes, listSeasons, createSeason, updateSeason, updateEpisode, type EpisodeInput } from '../api/episodes'
 
 export const episodeKeys = {
   all: ['episodes'] as const,
@@ -12,6 +12,7 @@ export const episodeKeys = {
 export function useSeasons(showId: number | undefined) { return useQuery({ queryKey: episodeKeys.seasons(showId ?? 0), queryFn: () => listSeasons(showId ?? 0), enabled: Boolean(showId) }) }
 export function useEpisodes(seasonId: number | undefined) { return useQuery({ queryKey: episodeKeys.list(seasonId ?? 0), queryFn: () => listEpisodes(seasonId ?? 0), enabled: Boolean(seasonId) }) }
 export function useEpisode(episodeId: string | undefined) { return useQuery({ queryKey: episodeKeys.detail(episodeId ?? ''), queryFn: () => getEpisode(episodeId ?? ''), enabled: Boolean(episodeId) }) }
+export function useEpisodeArtworks(episodeId: string | undefined) { return useQuery({ queryKey: [...episodeKeys.all, 'artworks', episodeId ?? ''], queryFn: () => listEpisodeArtworks(Number(episodeId)), enabled: Boolean(episodeId) }) }
 
 export function useCreateSeason() {
   const client = useQueryClient()

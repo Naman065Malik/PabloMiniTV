@@ -42,7 +42,7 @@ def build_catalogue(db: Session, show_ids: list[int], storage: StorageProtocol |
         artworks = db.query(Artwork).filter(Artwork.show_id == show.id).all()
         for aw in artworks:
             if aw.type and aw.storage_key:
-                show_entry["artworks"][aw.type.value] = f"/api/catalog/assets/{aw.storage_key}"
+                show_entry["artworks"][aw.type.value] = f"/catalog/assets/{aw.storage_key}"
         # Seasons
         seasons = db.query(Season).filter(Season.show_id == show.id).order_by(Season.season_number).all()
         for season in seasons:
@@ -83,7 +83,7 @@ def build_catalogue(db: Session, show_ids: list[int], storage: StorageProtocol |
                 art_map = {}
                 for aw in ep_artworks:
                     if aw.type and aw.storage_key:
-                        art_map[aw.type.value] = f"/api/catalog/assets/{aw.storage_key}"
+                        art_map[aw.type.value] = f"/catalog/assets/{aw.storage_key}"
                 if art_map:
                     logical_ep["artworks"] = art_map
                 season_entry["episodes"].append(logical_ep)

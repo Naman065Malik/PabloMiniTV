@@ -1,12 +1,12 @@
 """Validation service for publish readiness."""
 from __future__ import annotations
 
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session
 
-from app.models.artwork import Artwork
+from app.models.artwork import Artwork, ArtworkType
 from app.models.episode import Episode
-from app.models.show import Show, ShowStatus
 from app.models.season import Season
+from app.models.show import Show
 
 
 class ValidationIssue:
@@ -64,12 +64,10 @@ def validate_show_for_publish(db: Session, show_id: int) -> ValidationResult:
         errors.append(ValidationIssue("MISSING_SLUG", "Show must have a slug.", "show", show.id, "slug"))
     if show.section is None or (isinstance(show.section, str) and not show.section.strip()):
         errors.append(ValidationIssue("MISSING_SECTION", "Show must have a section before publishing.", "show", show.id, "section"))
-    if show.status != ShowStatus.PUBLISHED:
-        errors.append(ValidationIssue("INVALID_SHOW_STATUS", "Show status must be PUBLISHED.", "show", show.id, "status"))
     # Required artwork
-    for art_type in ("POSTER", "BANNER", "THUMBNAIL"):
+    for art_type in (ArtworkType.POSTER.value, ArtworkType.BANNER.value, ArtworkType.THUMBNAIL.value):
         if not _required_artwork_exists(db, "show", show.id, art_type):
-            errors.append(ValidationIssue("MISSING_ARTWORK", f"Show is missing required {art_type} artwork.", "show", show.id, "artwork"))
+            errors.append(ValidationIssue("MISSING_ARTWORK", f'Show "{show.title}" is missing required {art_type} artwork.', "show", show.id, "artwork"))
 
     # Season/episode validation
     seasons = db.query(Season).filter(Season.show_id == show.id).all()
@@ -87,9 +85,9 @@ def validate_show_for_publish(db: Session, show_id: int) -> ValidationResult:
                 errors.append(ValidationIssue("MISSING_CONTENT_GROUP", f"Episode {episode.id} is missing content_group.", "episode", episode.id, "content_group"))
             if episode.status != "published":
                 errors.append(ValidationIssue("INVALID_EPISODE_STATUS", f"Episode {episode.id} status is not PUBLISHED.", "episode", episode.id, "status"))
-            for art_type in ("POSTER", "BANNER", "THUMBNAIL"):
+            for art_type in (ArtworkType.THUMBNAIL.value,):
                 if not _required_artwork_exists(db, "episode", episode.id, art_type):
-                    errors.append(ValidationIssue("MISSING_ARTWORK", f"Episode {episode.id} is missing required {art_type} artwork.", "episode", episode.id, "artwork"))
+                    errors.append(ValidationIssue("MISSING_ARTWORK", f'Episode "{episode.title}" in show "{show.title}" is missing required {art_type} artwork.', "episode", episode.id, "artwork"))
 
     return ValidationResult(valid=len(errors) == 0, errors=errors)
 
@@ -105,6 +103,7 @@ def validate_episode_for_publish(db: Session, episode_id: int) -> ValidationResu
         errors.append(ValidationIssue("MISSING_LANGUAGE", "Episode must have a language.", "episode", episode.id, "language"))
     if not episode.content_group or not str(episode.content_group).strip():
         errors.append(ValidationIssue("MISSING_CONTENT_GROUP", "Episode must have a content_group.", "episode", episode.id, "content_group"))
+    show = None
     season = db.query(Season).filter(Season.id == episode.season_id).first()
     if not season:
         errors.append(ValidationIssue("INVALID_SEASON", "Episode belongs to invalid season.", "episode", episode.id, "season_id"))
@@ -112,7 +111,8 @@ def validate_episode_for_publish(db: Session, episode_id: int) -> ValidationResu
         show = db.query(Show).filter(Show.id == season.show_id).first()
         if not show:
             errors.append(ValidationIssue("INVALID_SHOW", "Season belongs to invalid show.", "season", season.id, "show_id"))
-    for art_type in ("POSTER", "BANNER", "THUMBNAIL"):
+    for art_type in (ArtworkType.THUMBNAIL.value,):
         if not _required_artwork_exists(db, "episode", episode.id, art_type):
-            errors.append(ValidationIssue("MISSING_ARTWORK", f"Episode is missing required {art_type} artwork.", "episode", episode.id, "artwork"))
+            show_title = show.title if show else "Unknown show"
+            errors.append(ValidationIssue("MISSING_ARTWORK", f'Episode "{episode.title}" in show "{show_title}" is missing required {art_type} artwork.', "episode", episode.id, "artwork"))
     return ValidationResult(valid=len(errors) == 0, errors=errors)

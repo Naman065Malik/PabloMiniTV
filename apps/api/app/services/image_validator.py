@@ -35,7 +35,7 @@ def validate_image(data: bytes, artwork_type: str) -> dict:
     if width <= 0 or height <= 0:
         raise AppError("Uploaded file is not a valid image.", 400)
 
-    policy = POLICY.get(artwork_type)
+    policy = POLICY.get(artwork_type.upper())
     if not policy:
         raise AppError("Unknown artwork type.", 400)
 
@@ -46,7 +46,7 @@ def validate_image(data: bytes, artwork_type: str) -> dict:
         expected = f"approximately {target:.2f}:1"
         actual = f"{aspect:.2f}:1"
         raise AppError(
-            f"{artwork_type} must use approximately a {expected} aspect ratio. Uploaded image has a {actual} aspect ratio.",
+            f"{artwork_type.upper()} must use approximately a {expected} aspect ratio. Uploaded image has a {actual} aspect ratio.",
             400,
         )
 
@@ -56,6 +56,10 @@ def validate_image(data: bytes, artwork_type: str) -> dict:
     return {
         "width": width,
         "height": height,
-        "mime_type": img.format.lower() if img.format else "jpeg",
+        "mime_type": {
+            "JPEG": "image/jpeg",
+            "PNG": "image/png",
+            "WEBP": "image/webp",
+        }.get(fmt, "image/jpeg"),
         "file_size_bytes": len(data),
     }

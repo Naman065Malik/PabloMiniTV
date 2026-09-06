@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { Button } from "../../components/ui/Button";
 import { Skeleton } from "../../components/ui/Skeleton";
+import { ValidationIssueCard } from "../../components/content/ValidationIssueCard";
 
 export function SeedPreflightPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -67,16 +68,7 @@ export function SeedPreflightPage() {
           {result.issues?.length > 0 && (
             <div className="space-y-2">
               <h3 className="font-semibold text-sm">Issues</h3>
-              {result.issues.map((issue: any, i: number) => (
-                <div key={i} className={`p-3 rounded border text-sm ${issue.severity === "error" ? "bg-red-50 border-red-200" : "bg-amber-50 border-amber-200"}`}>
-                  <strong>[{issue.severity.toUpperCase()}] {issue.code}</strong>
-                  <p>{issue.message}</p>
-                  {issue.show && <p className="text-xs">Show: {issue.show}</p>}
-                  {issue.episode_id && <p className="text-xs">Episode: {issue.episode_id}</p>}
-                  {issue.content_group && <p className="text-xs">Content group: {issue.content_group} / {issue.language}</p>}
-                  {issue.records?.length && <p className="text-xs">Records: {issue.records.join(", ")}</p>}
-                </div>
-              ))}
+{result.issues.map((issue: any, i: number) => (<ValidationIssueCard key={i} issue={issue} />))}
             </div>
           )}
           {importMsg && <p className="text-sm text-green-600">{importMsg}</p>}

@@ -5,10 +5,11 @@ export interface ApiOptions extends RequestInit {
 }
 
 export async function apiFetch<T>(endpoint: string, { token, headers, ...options }: ApiOptions = {}): Promise<T> {
+  const isFormData = options.body instanceof FormData
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     ...options,
     headers: {
-      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+      ...(options.body && !isFormData ? { 'Content-Type': 'application/json' } : {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...headers,
     },

@@ -154,7 +154,7 @@ a { color: inherit; }
 .editor-form fieldset > label + label, .editor-form .form-grid + label { margin-top: 16px; }
 .field-hint { display: block; margin: 6px 0 0; color: #938c9f; font-size: 11px; line-height: 1.5; font-weight: 500; }
 .artwork-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-top: 14px; }
-.artwork-slot { min-height: 150px; padding: 16px; align-content: center; border: 1px dashed #cfc8e3; border-radius: 13px; background: #fbfaff; cursor: pointer; transition: border-color .18s ease, background .18s ease; }
+.artwork-slot { min-height: 150px; align-self: start; padding: 16px; align-content: start; border: 1px dashed #cfc8e3; border-radius: 13px; background: #fbfaff; cursor: pointer; transition: border-color .18s ease, background .18s ease; }
 .artwork-slot:hover { border-color: #8f83d5; background: #f7f5ff; }
 .artwork-slot strong { color: var(--cms-text); font-size: 13px; }
 .artwork-slot span { color: #8a8398; font-size: 11px; font-weight: 500; }

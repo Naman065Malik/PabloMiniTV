@@ -2,10 +2,13 @@ import { Link } from 'react-router-dom'
 import { Button } from '../../components/ui/Button'
 import { EmptyState } from '../../components/ui/EmptyState'
 import { Skeleton } from '../../components/ui/Skeleton'
-import { useShows } from '../../queries/useShows'
+import { useShows, useUpdateShow } from '../../queries/useShows'
+import { useQueryClient } from '@tanstack/react-query'
 
 export function ShowsPage() {
   const { data, error, isLoading, refetch } = useShows()
+  const queryClient = useQueryClient()
+  const updateShow = useUpdateShow()
 
   return (
     <section className="space-y-6">
@@ -35,7 +38,7 @@ export function ShowsPage() {
                   <td>{show.category || '—'}</td>
                   <td><span className={`status status-${show.status}`}>{show.status}</span></td>
                   <td>{new Date(show.updated_at).toLocaleDateString()}</td>
-                  <td><Button asChild size="sm" variant="outline"><Link to={`/admin/shows/${show.id}`}>Manage</Link></Button></td>
+                  <td><div className="flex gap-2"><Button asChild size="sm" variant="outline"><Link to={`/admin/shows/${show.id}`}>Manage</Link></Button><Button size="sm" variant="outline" onClick={() => { const nextStatus = show.status === "published" ? "draft" : "published"; const action = nextStatus === "published" ? "Publish" : "Unpublish"; if (confirm(`${action} this show? This updates status to ${nextStatus}.`)) updateShow.mutate({ id: show.id, input: { status: nextStatus } }, { onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["shows"] }); refetch() } }) }} disabled={updateShow.isPending}>{updateShow.isPending ? "Updating…" : show.status === "published" ? "Unpublish" : "Publish"}</Button></div></td>
                 </tr>
               ))}
             </tbody>

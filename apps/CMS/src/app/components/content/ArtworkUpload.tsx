@@ -1,5 +1,6 @@
 import { useState, useCallback, type ChangeEvent } from 'react'
 import { Button } from '../ui/Button'
+import type { Artwork } from '../../api/shows'
 
 export type ArtworkType = 'POSTER' | 'BANNER' | 'THUMBNAIL'
 
@@ -24,8 +25,8 @@ export interface ArtworkSlotState {
 
 export interface ArtworkUploadProps {
   type: ArtworkType
-  onUpload?: (file: File) => void
-  initialFile?: File | null
+  onUpload?: (file: File) => Promise<void> | void
+  existingArtwork?: Artwork
 }
 
 function getAspect(width: number, height: number) {
@@ -38,18 +39,18 @@ function formatAspect(width: number, height: number) {
   return a.toFixed(2) + ':1'
 }
 
-function validateSlot(file: File, type: ArtworkType): string | null {
+function validateSlot(file: File): string | null {
   if (!file) return 'Please select a file.'
   if (!SUPPORTED.includes(file.type)) return 'Supported formats: JPEG, PNG, WEBP.'
   if (file.size > MAX_SIZE) return `${file.name} is ${Math.round(file.size / 1024)} KB, larger than 200 KB limit.`
   return null
 }
 
-export function ArtworkUpload({ type, onUpload, initialFile }: ArtworkUploadProps) {
+export function ArtworkUpload({ type, onUpload, existingArtwork }: ArtworkUploadProps) {
   const cfg = ARTWORK_CONFIG[type]
   const [state, setState] = useState<ArtworkSlotState>({
-    file: initialFile ?? null,
-    previewUrl: initialFile ? URL.createObjectURL(initialFile) : null,
+    file: null,
+    previewUrl: null,
     width: null, height: null, error: null,
     isUploading: false, uploaded: false,
   })
@@ -57,7 +58,7 @@ export function ArtworkUpload({ type, onUpload, initialFile }: ArtworkUploadProp
   const handleFileChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    const basicError = validateSlot(file, type)
+    const basicError = validateSlot(file)
     if (basicError) {
       setState(s => ({ ...s, file, previewUrl: null, width: null, height: null, error: basicError, uploaded: false }))
       return
@@ -93,11 +94,21 @@ export function ArtworkUpload({ type, onUpload, initialFile }: ArtworkUploadProp
     img.src = URL.createObjectURL(file)
   }, [type, cfg])
 
-  const handleUpload = useCallback(() => {
+  const handleUpload = useCallback(async () => {
     if (!state.file || state.error) return
     setState(s => ({ ...s, isUploading: true, uploaded: false }))
-    if (onUpload) onUpload(state.file)
-    setTimeout(() => setState(s => ({ ...s, isUploading: false, uploaded: true })), 600)
+    try {
+      if (!onUpload) throw new Error('Save the show before uploading artwork.')
+      await onUpload(state.file)
+      setState(s => ({ ...s, isUploading: false, uploaded: true }))
+    } catch (error) {
+      setState(s => ({
+        ...s,
+        isUploading: false,
+        uploaded: false,
+        error: error instanceof Error ? error.message : 'Artwork upload failed.',
+      }))
+    }
   }, [state.file, state.error, onUpload])
 
   const handleRemove = useCallback(() => {
@@ -106,7 +117,7 @@ export function ArtworkUpload({ type, onUpload, initialFile }: ArtworkUploadProp
   }, [state.previewUrl])
 
   const hasError = !!state.error
-  const canUpload = !!state.file && !hasError && !state.isUploading && !state.uploaded
+  const canUpload = !!state.file && !!onUpload && !hasError && !state.isUploading && !state.uploaded
 
   return (
     <div className="artwork-slot" aria-label={`${cfg.label} upload`}>
@@ -123,6 +134,22 @@ export function ArtworkUpload({ type, onUpload, initialFile }: ArtworkUploadProp
           <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFileChange} className="hidden" />
         </label>
       </div>
+
+      {existingArtwork && !state.file && (
+        <div className="mt-3">
+          <img
+            src={`/api/public/catalog/catalog/assets/${existingArtwork.storage_key}`}
+            alt={`Current ${cfg.label.toLowerCase()}`}
+            className="max-h-40 rounded border border-gray-200 object-contain"
+          />
+          <div className="mt-1 text-xs text-gray-500">
+            Current: {existingArtwork.original_filename} · {Math.round(existingArtwork.file_size_bytes / 1024)} KB
+          </div>
+          {existingArtwork.width && existingArtwork.height && (
+            <div className="text-xs text-gray-500">Dimensions: {existingArtwork.width} × {existingArtwork.height}</div>
+          )}
+        </div>
+      )}
 
       {state.file && (
         <div className="mt-2 text-xs">{state.file.name} · {Math.round(state.file.size / 1024)} KB</div>

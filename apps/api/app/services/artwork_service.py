@@ -2,15 +2,14 @@
 from __future__ import annotations
 
 import uuid
-from pathlib import Path
 
-from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.models.artwork import Artwork, ArtworkType
-from app.models.show import Show
 from app.models.episode import Episode
+from app.models.show import Show
 from app.services.image_validator import validate_image
 from app.storage.base import StorageProtocol
 from app.storage.local import LocalStorage
@@ -53,7 +52,7 @@ def create_artwork(
 
     # Determine extension from validated format
     fmt = info["mime_type"].upper()
-    ext_map = {"JPEG": "jpg", "PNG": "png", "WEBP": "webp"}
+    ext_map = {"IMAGE/JPEG": "jpg", "IMAGE/PNG": "png", "IMAGE/WEBP": "webp"}
     ext = ext_map.get(fmt, "jpg")
 
     key = _build_key(parent_type, parent_id, ext)
@@ -64,6 +63,7 @@ def create_artwork(
         Artwork.type == artwork_type,
         getattr(Artwork, f"{parent_type}_id") == parent_id,
     ).first()
+    old_key = existing.storage_key if existing else None
 
     # Save new file first
     storage.put(key, file_bytes)

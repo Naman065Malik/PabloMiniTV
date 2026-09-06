@@ -90,6 +90,8 @@ def update(db: Session, show_id: int, data: ShowUpdate) -> Show:
         show.section = data.section
     if data.category is not None:
         show.category = data.category
+    if data.status is not None:
+        show.status = data.status
     db.commit()
     db.refresh(show)
     return show

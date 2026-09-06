@@ -19,6 +19,11 @@ export interface ValidationReport {
   invalid_episodes: number
   errors: ValidationIssue[]
   warnings: ValidationIssue[]
+  last_publish_failure?: {
+    run_id: number
+    message: string
+    created_at?: string
+  } | null
 }
 
 function token() { return window.localStorage.getItem('pablo-mini-tv-auth-token') }

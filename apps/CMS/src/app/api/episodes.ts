@@ -1,5 +1,5 @@
 import { apiFetch } from './client'
-import type { ContentStatus } from './shows'
+import type { Artwork, ContentStatus } from './shows'
 
 export interface Season {
   id: number
@@ -43,4 +43,12 @@ export function deleteSeason(seasonId: number) { return apiFetch<void>(`/admin/s
 export function listEpisodes(seasonId: number) { return apiFetch<Episode[]>(`/admin/seasons/${seasonId}/episodes`, { token: token() }) }
 export function getEpisode(episodeId: string) { return apiFetch<Episode>(`/admin/episodes/${episodeId}`, { token: token() }) }
 export function createEpisode(seasonId: number, input: EpisodeInput) { return apiFetch<Episode>(`/admin/seasons/${seasonId}/episodes`, { method: 'POST', token: token(), body: JSON.stringify(input) }) }
-export function updateEpisode(episodeId: number, input: Partial<EpisodeInput>) { return apiFetch<Episode>(`/admin/episodes/${episodeId}`, { method: 'PATCH', token: token(), body: JSON.stringify(input) }) }
+export function updateEpisode(episodeId: string, input: Partial<EpisodeInput>) { return apiFetch<Episode>(`/admin/episodes/${episodeId}`, { method: 'PATCH', token: token(), body: JSON.stringify(input) }) }
+export function uploadEpisodeArtwork(episodeId: number, artworkType: string, file: File) {
+  const body = new FormData()
+  body.append('file', file)
+  return apiFetch<Artwork>(`/admin/episodes/${episodeId}/artworks?artwork_type=${encodeURIComponent(artworkType)}`, { method: 'POST', token: token(), body })
+}
+export function listEpisodeArtworks(episodeId: number) {
+  return apiFetch<Artwork[]>(`/admin/episodes/${episodeId}/artworks`, { token: token() })
+}

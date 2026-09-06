@@ -1,10 +1,11 @@
-import { useState, type FormEvent } from 'react'
+import { type FormEvent } from 'react'
 import { Input } from '../ui/Input'
 import { Select } from '../ui/Select'
 import { Textarea } from '../ui/Textarea'
 import { Button } from '../ui/Button'
 import { ArtworkUpload } from './ArtworkUpload'
-import type { Show, ShowInput } from '../../api/shows'
+import type { Artwork, Show, ShowInput } from '../../api/shows'
+import type { ArtworkType } from './ArtworkUpload'
 
 interface ShowFormProps {
   initialData?: Show
@@ -12,27 +13,12 @@ interface ShowFormProps {
   onCancel: () => void
   isSubmitting?: boolean
   error?: string
+  onArtworkUpload?: (type: ArtworkType, file: File) => Promise<void>
+  artworks?: Artwork[]
 }
 
-const artworkSlots = [
-  ['Poster', '2:3 · ~600 × 900 · max 200KB'],
-  ['Banner', '16:9 · ~1280 × 720 · max 200KB'],
-  ['Thumbnail', '16:9 · ~640 × 360 · max 200KB'],
-] as const
-
-export function ShowForm({ initialData, onSubmit, onCancel, isSubmitting = false, error }: ShowFormProps) {
-  const [artworkMessage, setArtworkMessage] = useState('')
-
-  function handleArtwork(file: File | undefined) {
-    if (!file) return
-    if (!file.type.startsWith('image/')) {
-      setArtworkMessage('Please choose an image file.')
-    } else if (file.size > 200 * 1024) {
-      setArtworkMessage(`${file.name} is larger than the 200KB limit.`)
-    } else {
-      setArtworkMessage(`${file.name} is ready to upload when artwork storage is connected.`)
-    }
-  }
+export function ShowForm({ initialData, onSubmit, onCancel, isSubmitting = false, error, onArtworkUpload, artworks = [] }: ShowFormProps) {
+  const artworkFor = (type: ArtworkType) => artworks.find(artwork => artwork.type === type.toLowerCase())
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -55,9 +41,9 @@ export function ShowForm({ initialData, onSubmit, onCancel, isSubmitting = false
     </fieldset>
     <fieldset><legend>Artwork</legend><p className="field-hint">Upload artwork that meets the required dimensions, aspect ratio, and 200 KB limit.</p>
       <div className="artwork-grid">
-        <ArtworkUpload type="POSTER" />
-        <ArtworkUpload type="BANNER" />
-        <ArtworkUpload type="THUMBNAIL" />
+        <ArtworkUpload type="POSTER" existingArtwork={artworkFor('POSTER')} onUpload={onArtworkUpload ? file => onArtworkUpload('POSTER', file) : undefined} />
+        <ArtworkUpload type="BANNER" existingArtwork={artworkFor('BANNER')} onUpload={onArtworkUpload ? file => onArtworkUpload('BANNER', file) : undefined} />
+        <ArtworkUpload type="THUMBNAIL" existingArtwork={artworkFor('THUMBNAIL')} onUpload={onArtworkUpload ? file => onArtworkUpload('THUMBNAIL', file) : undefined} />
       </div>
     </fieldset>
     <div className="form-actions"><Button type="button" variant="outline" onClick={onCancel}>Cancel</Button><Button type="submit" variant="outline" disabled={isSubmitting}>Save Draft</Button><Button type="submit" variant="accent" disabled={isSubmitting}>{isSubmitting ? 'Saving…' : 'Save'}</Button></div>

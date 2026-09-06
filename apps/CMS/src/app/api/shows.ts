@@ -26,6 +26,7 @@ export interface ShowInput {
   description?: string
   section?: string
   category?: string
+  status?: ContentStatus
 }
 
 export interface ShowFilters {
@@ -62,6 +63,35 @@ export function deleteShow(showId: number) {
   return apiFetch<void>(`/admin/shows/${showId}`, { method: 'DELETE', token: token() })
 }
 
+export function publishShow(showId: number) {
+  return apiFetch<Show>(`/admin/shows/${showId}/publish`, { method: "POST", token: token(), body: JSON.stringify({status:"published"}) })
+}
+
 export function updateShow(showId: number, input: Partial<ShowInput>) {
   return apiFetch<Show>(`/admin/shows/${showId}`, { method: 'PATCH', token: token(), body: JSON.stringify(input) })
+}
+
+export interface Artwork {
+  id: number
+  type: 'poster' | 'banner' | 'thumbnail'
+  storage_key: string
+  original_filename: string
+  mime_type: string
+  file_size_bytes: number
+  width: number | null
+  height: number | null
+}
+
+export function uploadShowArtwork(showId: number, artworkType: string, file: File) {
+  const body = new FormData()
+  body.append('file', file)
+  return apiFetch<Artwork>(`/admin/shows/${showId}/artworks?artwork_type=${encodeURIComponent(artworkType)}`, {
+    method: 'POST',
+    token: token(),
+    body,
+  })
+}
+
+export function listShowArtworks(showId: number) {
+  return apiFetch<Artwork[]>(`/admin/shows/${showId}/artworks`, { token: token() })
 }

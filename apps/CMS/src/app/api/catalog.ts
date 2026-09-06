@@ -3,12 +3,19 @@ import { apiFetch } from './client'
 export interface PublishRun {
   id: number
   created_by: number
-  status: 'draft' | 'queued' | 'processing' | 'completed' | 'failed'
+  status: 'draft' | 'queued' | 'processing' | 'success' | 'failed'
   created_at?: string
   started_at?: string | null
   completed_at?: string | null
   shows_count?: number
   episodes_count?: number
+  validation_report?: Array<{
+    code?: string
+    message?: string
+    entity_type?: string
+    entity_id?: number
+    field?: string
+  }>
 }
 
 function token() { return window.localStorage.getItem('pablo-mini-tv-auth-token') }

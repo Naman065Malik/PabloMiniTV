@@ -19,11 +19,11 @@ class Settings(BaseSettings):
     dev_editor_password: str = "editor-password"
     storage_backend: str = Field(default="local", validation_alias="STORAGE_BACKEND")
     local_storage_path: str = Field(
-        default="/tmp/peblo_tv/storage",
+        default="/home/naman/Documents/PabloMiniTV/apps/api/storage",
         validation_alias="LOCAL_STORAGE_PATH",
     )
     catalogue_storage_path: str = Field(
-        default="/tmp/peblo_tv/catalogue",
+        default="/home/naman/Documents/PabloMiniTV/apps/api/storage/catalog",
         validation_alias="CATALOGUE_STORAGE_PATH",
     )
     alert_webhook_url: str | None = Field(
