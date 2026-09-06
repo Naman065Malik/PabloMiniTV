@@ -58,6 +58,10 @@ export function createShow(input: ShowInput) {
   return apiFetch<Show>('/admin/shows', { method: 'POST', token: token(), body: JSON.stringify(input) })
 }
 
+export function deleteShow(showId: number) {
+  return apiFetch<void>(`/admin/shows/${showId}`, { method: 'DELETE', token: token() })
+}
+
 export function updateShow(showId: number, input: Partial<ShowInput>) {
   return apiFetch<Show>(`/admin/shows/${showId}`, { method: 'PATCH', token: token(), body: JSON.stringify(input) })
 }

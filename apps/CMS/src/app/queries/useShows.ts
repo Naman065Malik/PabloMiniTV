@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createShow, getShow, listShows, updateShow, type ShowFilters, type ShowInput } from '../api/shows'
+import { createShow, deleteShow, getShow, listShows, updateShow, type ShowFilters, type ShowInput } from '../api/shows'
 
 export const showKeys = {
   all: ['shows'] as const,
@@ -26,6 +26,14 @@ export function useCreateShow() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (input: ShowInput) => createShow(input),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: showKeys.all }),
+  })
+}
+
+export function useDeleteShow() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number) => deleteShow(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: showKeys.all }),
   })
 }

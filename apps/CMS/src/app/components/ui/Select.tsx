@@ -1,23 +1,14 @@
-// Select component.
 import { forwardRef, type SelectHTMLAttributes } from 'react'
 import { cn } from '../../lib/utils'
 
 export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {}
 
-const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ className, ...props }, ref) => {
-    return (
-      <select
-        className={cn(
-          'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
-          className
-        )}
-        ref={ref}
-        {...props}
-      />
-    )
-  }
-)
+const Select = forwardRef<HTMLSelectElement, SelectProps>(({ className, ...props }, ref) => (
+  <select
+    ref={ref}
+    className={cn('h-10 w-full rounded-lg border border-[#ddd7e9] bg-white px-3 text-sm text-[#302a42] shadow-sm outline-none focus:border-[#8d82df] focus:ring-3 focus:ring-[#8d82df]/15 disabled:cursor-not-allowed disabled:bg-[#f5f3f8] disabled:opacity-60', className)}
+    {...props}
+  />
+))
 Select.displayName = 'Select'
-
 export { Select }

@@ -13,9 +13,17 @@ export interface ApiUser {
 }
 
 export function loginRequest(email: string, password: string) {
+  const formData = new URLSearchParams()
+
+  formData.append('username', email)
+  formData.append('password', password)
+
   return apiFetch<AuthToken>('/auth/login', {
     method: 'POST',
-    body: JSON.stringify({ email, password }),
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: formData.toString(),
   })
 }
 

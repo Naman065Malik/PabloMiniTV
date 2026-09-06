@@ -3,6 +3,7 @@ import { Input } from '../ui/Input'
 import { Select } from '../ui/Select'
 import { Textarea } from '../ui/Textarea'
 import { Button } from '../ui/Button'
+import { ArtworkUpload } from './ArtworkUpload'
 import type { Show, ShowInput } from '../../api/shows'
 
 interface ShowFormProps {
@@ -52,9 +53,12 @@ export function ShowForm({ initialData, onSubmit, onCancel, isSubmitting = false
       <div className="form-grid"><label>Section<Select name="section" defaultValue={initialData?.section ?? ''}><option value="">Choose section</option><option value="preschool">Preschool</option><option value="kids">Kids</option><option value="family">Family</option></Select></label><label>Category<Input name="category" defaultValue={initialData?.category ?? ''} placeholder="e.g. Adventure" /></label></div>
       <div className="form-grid"><label>Primary language<Select disabled defaultValue="en"><option value="en">English</option></Select><span className="field-hint">Language metadata is not yet exposed by the current API.</span></label><label>Status<Select disabled defaultValue={initialData?.status ?? 'draft'}><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></Select><span className="field-hint">Status is controlled by publishing.</span></label></div>
     </fieldset>
-    <fieldset><legend>Artwork</legend><p className="field-hint">Upload artwork that meets the required aspect ratio and file-size guidance.</p>
-      <div className="artwork-grid">{artworkSlots.map(([name, hint]) => <label className="artwork-slot" key={name}><strong>{name}</strong><span>{hint}</span><input type="file" accept="image/*" onChange={event => handleArtwork(event.target.files?.[0])} /></label>)}</div>
-      {artworkMessage && <p className="field-hint" role="status">{artworkMessage}</p>}
+    <fieldset><legend>Artwork</legend><p className="field-hint">Upload artwork that meets the required dimensions, aspect ratio, and 200 KB limit.</p>
+      <div className="artwork-grid">
+        <ArtworkUpload type="POSTER" />
+        <ArtworkUpload type="BANNER" />
+        <ArtworkUpload type="THUMBNAIL" />
+      </div>
     </fieldset>
     <div className="form-actions"><Button type="button" variant="outline" onClick={onCancel}>Cancel</Button><Button type="submit" variant="outline" disabled={isSubmitting}>Save Draft</Button><Button type="submit" variant="accent" disabled={isSubmitting}>{isSubmitting ? 'Saving…' : 'Save'}</Button></div>
   </form>

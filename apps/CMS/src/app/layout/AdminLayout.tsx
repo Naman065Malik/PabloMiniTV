@@ -5,14 +5,14 @@ import { useAuth } from '../hooks/useAuth'
 
 export function AdminLayout() {
   const { user } = useAuth()
-  if (!user) return null;
+  if (!user) return null
 
   return (
-    <div className="flex">
+    <div className="admin-shell">
       <Sidebar />
-      <div className="flex-1 ml-[260px]">
+      <div className="admin-main">
         <Header />
-        <main className="p-8">
+        <main className="admin-content">
           <Outlet />
         </main>
       </div>

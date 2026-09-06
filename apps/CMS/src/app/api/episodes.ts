@@ -36,6 +36,10 @@ export interface EpisodeInput {
 function token() { return window.localStorage.getItem('pablo-mini-tv-auth-token') }
 
 export function listSeasons(showId: number) { return apiFetch<Season[]>(`/admin/shows/${showId}/seasons`, { token: token() }) }
+export function getSeason(seasonId: number) { return apiFetch<Season>(`/admin/seasons/${seasonId}`, { token: token() }) }
+export function createSeason(showId: number, input: { season_number: number; title?: string }) { return apiFetch<Season>(`/admin/shows/${showId}/seasons`, { method: 'POST', token: token(), body: JSON.stringify(input) }) }
+export function updateSeason(seasonId: number, input: Partial<{ season_number: number; title?: string }>) { return apiFetch<Season>(`/admin/seasons/${seasonId}`, { method: 'PATCH', token: token(), body: JSON.stringify(input) }) }
+export function deleteSeason(seasonId: number) { return apiFetch<void>(`/admin/seasons/${seasonId}`, { method: 'DELETE', token: token() }) }
 export function listEpisodes(seasonId: number) { return apiFetch<Episode[]>(`/admin/seasons/${seasonId}/episodes`, { token: token() }) }
 export function getEpisode(episodeId: string) { return apiFetch<Episode>(`/admin/episodes/${episodeId}`, { token: token() }) }
 export function createEpisode(seasonId: number, input: EpisodeInput) { return apiFetch<Episode>(`/admin/seasons/${seasonId}/episodes`, { method: 'POST', token: token(), body: JSON.stringify(input) }) }

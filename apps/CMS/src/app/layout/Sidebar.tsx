@@ -1,48 +1,49 @@
-import { useLocation, useNavigate } from 'react-router-dom'
+import { BarChart3, BookOpen, Film, LayoutDashboard, LogOut, Rocket, Tv } from 'lucide-react'
+import { NavLink } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 
+const navItems = [
+  { icon: LayoutDashboard, label: 'Dashboard', href: '/admin/dashboard' },
+  { section: 'CONTENT' },
+  { icon: Tv, label: 'Shows', href: '/admin/shows' },
+  { icon: Film, label: 'Episodes', href: '/admin/episodes' },
+  { section: 'PUBLISHING' },
+  { icon: Rocket, label: 'Publish', href: '/admin/publish' },
+]
+
 export function Sidebar() {
-  const location = useLocation()
-  const navigate = useNavigate()
   const { user, logout } = useAuth()
   if (!user) return null
-
-  const navItems = [
-    { icon: '🏠', label: 'Dashboard', href: '/admin/dashboard', active: location.pathname === '/admin/dashboard' },
-    { type: 'section', label: 'CONTENT' as const },
-    { icon: '📺', label: 'Shows', href: '/admin/shows', active: location.pathname.startsWith('/admin/shows') && !location.pathname.includes('/edit') && location.pathname !== '/admin/shows/new' },
-    { icon: '🎬', label: 'Episodes', href: '/admin/episodes', active: location.pathname.startsWith('/admin/episodes') && !location.pathname.includes('/edit') && location.pathname !== '/admin/episodes/new' },
-    { type: 'section', label: 'PUBLISHING' as const },
-    { icon: '🚀', label: 'Publish', href: '/admin/publish', active: location.pathname === '/admin/publish' },
-  ]
 
   return (
     <aside className="admin-sidebar">
       <div className="sidebar-header">
-        <h1>PabloMiniTV</h1>
-        <p>CMS</p>
+        <div className="sidebar-brand">
+          <div className="brand-mark" aria-hidden="true"><BookOpen /></div>
+          <div>
+            <h1>PabloMiniTV</h1>
+            <p>Content Studio</p>
+          </div>
+        </div>
       </div>
 
-      <nav className="sidebar-nav">
+      <nav className="sidebar-nav" aria-label="CMS navigation">
         {navItems.map((item, index) => {
-          if ('type' in item && item.type === 'section') {
-            return (
-              <div key={index} className="nav-section">
-                <span className="section-label">{item.label}</span>
-              </div>
-            )
+          if ('section' in item) {
+            return <div key={item.section} className="nav-section"><span className="section-label">{item.section}</span></div>
           }
 
+          const Icon = item.icon
           return (
-            <a
-              key={index}
-              href={item.href}
-              onClick={(e) => { e.preventDefault(); navigate(item.href || '/admin') }}
-              className={`nav-item ${item.active ? 'active' : ''}`}
+            <NavLink
+              key={item.href}
+              to={item.href}
+              className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+              end={item.href === '/admin/dashboard'}
             >
-              <span className="nav-icon">{item.icon}</span>
+              <span className="nav-icon"><Icon /></span>
               <span className="nav-label">{item.label}</span>
-            </a>
+            </NavLink>
           )
         })}
       </nav>
@@ -52,8 +53,8 @@ export function Sidebar() {
           <div className="user-name">{user.email.split('@')[0]}</div>
           <div className="user-role">{user.role}</div>
         </div>
-        <button onClick={logout} className="logout-btn">
-          Logout
+        <button type="button" onClick={logout} className="logout-btn">
+          <LogOut size={15} aria-hidden="true" /> <span>Sign out</span>
         </button>
       </div>
     </aside>

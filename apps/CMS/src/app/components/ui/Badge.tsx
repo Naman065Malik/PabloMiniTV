@@ -1,4 +1,3 @@
-// Badge component for status indicators.
 import { forwardRef, type HTMLAttributes } from 'react'
 import { cn } from '../../lib/utils'
 
@@ -7,30 +6,17 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 const badgeVariants = {
-  default: 'bg-primary text-primary-foreground hover:bg-primary/80',
-  secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-  destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/80',
-  outline: 'text-foreground border border-input',
-  success: 'bg-green-100 text-green-800',
-  warning: 'bg-yellow-100 text-yellow-800',
-  info: 'bg-blue-100 text-blue-800',
+  default: 'bg-[#4f46b5] text-white border-[#4f46b5]',
+  secondary: 'bg-[#f1eef8] text-[#5d566b] border-[#e2ddec]',
+  destructive: 'bg-[#fff0f2] text-[#c43d4b] border-[#f0cbd1]',
+  outline: 'bg-white text-[#514a5e] border-[#ddd7e9]',
+  success: 'bg-[#eaf8f0] text-[#198754] border-[#cdebd9]',
+  warning: 'bg-[#fff6df] text-[#a66a00] border-[#f3dfab]',
+  info: 'bg-[#edf5ff] text-[#2864a5] border-[#d1e3f8]',
 }
 
-const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
-  ({ className, variant = 'default', ...props }, ref) => {
-    return (
-      <span
-        ref={ref}
-        className={cn(
-          'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
-          badgeVariants[variant],
-          className
-        )}
-        {...props}
-      />
-    )
-  }
-)
+const Badge = forwardRef<HTMLSpanElement, BadgeProps>(({ className, variant = 'default', ...props }, ref) => (
+  <span ref={ref} className={cn('inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold', badgeVariants[variant], className)} {...props} />
+))
 Badge.displayName = 'Badge'
-
 export { Badge, badgeVariants }

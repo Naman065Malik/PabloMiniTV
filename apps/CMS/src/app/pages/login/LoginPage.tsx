@@ -49,7 +49,8 @@ export function LoginPage() {
 
         <div className="login-form-wrapper">
           <div className="login-form">
-            <h2>Sign In</h2>
+            <h2>Welcome back</h2>
+            <p className="subtitle">Sign in to manage the PabloMiniTV catalogue.</p>
 
             {error && (
               <div className="error-message">
@@ -95,8 +96,8 @@ export function LoginPage() {
 
             <div className="login-help">
               <p>Demo credentials:</p>
-              <p><strong>admin@peblo.tv</strong> / admin-password (admin role)</p>
-              <p><strong>editor@peblo.tv</strong> / editor-password (editor role)</p>
+              <p><strong>admin@peblo.local</strong> / admin-password (admin role)</p>
+              <p><strong>editor@peblo.local</strong> / editor-password (editor role)</p>
             </div>
           </div>
         </div>
