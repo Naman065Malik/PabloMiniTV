@@ -13,7 +13,7 @@ export function ShowEditPage() {
   if (show.isLoading) return <Skeleton count={6} />
   if (show.error || !show.data) return <EmptyState message="Show not found" description={show.error?.message ?? 'This show is no longer available.'} />
 
-  return <section className="editor-page"><div><p className="eyebrow">Content library</p><h1 className="page-title">Edit {show.data.title}</h1></div>
-    <ShowForm initialData={show.data} onCancel={() => navigate('/admin/shows')} onSubmit={input => updateShow.mutate({ id: show.data.id, input }, { onSuccess: () => navigate('/admin/shows') })} isSubmitting={updateShow.isPending} error={updateShow.error?.message} />
+  return <section className="editor-page"><div><button onClick={() => navigate(`/admin/shows/${showId}`)} className="text-sm text-blue-600 hover:underline mb-2">← Back to {show.data?.title || 'Show'}</button><p className="eyebrow">Content library</p><h1 className="page-title">Edit {show.data.title}</h1></div>
+    <ShowForm initialData={show.data} onCancel={() => navigate(`/admin/shows/${showId}`)} onSubmit={input => updateShow.mutate({ id: show.data.id, input }, { onSuccess: () => navigate(`/admin/shows/${showId}`) })} isSubmitting={updateShow.isPending} error={updateShow.error?.message} />
   </section>
 }

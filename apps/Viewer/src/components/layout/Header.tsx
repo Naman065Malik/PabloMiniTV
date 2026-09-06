@@ -6,13 +6,18 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-50 bg-[rgba(251,251,255,0.92)] backdrop-blur-[16px]">
-      <div className="h-[68px] w-[min(1240px,calc(100%-48px))] mx-auto flex items-center justify-between">
+    <header className="sticky top-0 z-50 bg-[rgba(251,251,255,0.92)] backdrop-blur-[16px] w-full">
+      <div className="h-[68px] w-full max-w-[1400px] mx-auto px-6 md:px-10 lg:px-16 xl:px-20 flex items-center gap-6 justify-between">
         <img
           src="/assets/brand-logo.webp"
           alt="Pablo and his dog companion in a playful lavender world"
-          className="block w-[175px] h-auto"
+          className="block w-[175px] h-auto shrink-0"
         />
+        <nav aria-label="Main" className="hidden md:flex items-center gap-5 text-sm font-bold text-[#4d27a8]">
+          {["Home","Shows","Learn","Bedtime","Parents"].map((item) => (
+            <a key={item} href="#" className="hover:text-[#aa3bff] transition-colors">{item}</a>
+          ))}
+        </nav>
         <div className="flex items-center gap-2">
           <button
             className="w-10 h-10 rounded-full bg-[rgba(255,255,255,0.7)] hover:bg-[rgba(255,255,255,1)] flex items-center justify-center text-[18px] shadow-sm"
@@ -45,7 +50,7 @@ export default function Header() {
         </div>
       )}
       {menuOpen && (
-        <div className="bg-white/95 backdrop-blur-md border-t border-[#e8e6ff] px-6 py-4 shadow-xl flex flex-col gap-2 max-w-[1240px] mx-auto">
+        <div className="bg-white/95 backdrop-blur-md border-t border-[#e8e6ff] px-6 py-4 shadow-xl flex flex-col gap-2 max-w-[1400px] mx-auto">
           <strong className="text-[#4d27a8] text-sm mb-1">Explore PabloMiniTV</strong>
           {["Home","Shows","Learn","Bedtime Stories","Parents"].map((b) => (
             <button key={b} className="text-left text-[#69627f] font-bold px-3 py-2 rounded-xl hover:bg-[#f2efff] hover:text-[#4d27a8] transition-colors">{b}</button>

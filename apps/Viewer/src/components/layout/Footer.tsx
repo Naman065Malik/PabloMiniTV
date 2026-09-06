@@ -2,7 +2,7 @@ import Logo from "./Logo";
 export default function Footer() {
   return (
     <footer className="bg-[#f0f3ff] py-[38px]">
-      <div className="w-[min(1160px,calc(100%-48px))] mx-auto grid grid-cols-[1fr_1fr_auto] items-center gap-7">
+      <div className="w-full max-w-[1400px] mx-auto px-0 grid grid-cols-[1fr_1fr_auto] items-center gap-7">
         <div>
           <Logo />
           <p className="text-[#746d8b] text-[13px] mt-1">Play. Learn. Grow. Together!</p>

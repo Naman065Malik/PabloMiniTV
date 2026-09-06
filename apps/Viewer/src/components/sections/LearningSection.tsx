@@ -3,7 +3,7 @@ import SectionHeading from "./SectionHeading";
 export default function LearningSection() {
   return (
     <section className="pb-[58px]">
-      <div className="w-[min(1160px,calc(100%-48px))] mx-auto">
+      <div className="w-full max-w-[1400px] mx-auto px-0">
         <SectionHeading title="Learn While You Watch" />
         <div className="grid grid-cols-4 gap-[18px]">
           {learningCategories.map((cat) => (

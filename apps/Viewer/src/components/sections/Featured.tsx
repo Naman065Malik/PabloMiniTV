@@ -1,7 +1,7 @@
 export default function Featured() {
   return (
     <section className="pb-[58px]">
-      <div className="w-[min(1160px,calc(100%-48px))] mx-auto">
+      <div className="w-full max-w-[1400px] mx-auto px-0">
         <div className="flex items-center justify-between mb-[18px]">
           <h2 className="text-[30px] leading-none tracking-[-1px] font-black m-0">Featured Episode</h2>
           <button className="bg-none text-[#4d27a8] font-black">See All <span aria-hidden="true">→</span></button>

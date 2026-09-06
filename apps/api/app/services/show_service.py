@@ -96,8 +96,17 @@ def update(db: Session, show_id: int, data: ShowUpdate) -> Show:
 
 
 def delete(db: Session, show_id: int) -> None:
+    from app.models.publish_run import PublishRunShow
+
     show = get(db, show_id)
     if not show:
         raise ValueError("not_found")
+    # Remove publish-run join rows first. Their FK to shows.id has no ON DELETE
+    # CASCADE, so deleting a show that has ever been part of a publish run would
+    # otherwise raise an integrity error. This only clears the historical
+    # association rows; it does not alter publishing behaviour.
+    db.query(PublishRunShow).filter(PublishRunShow.show_id == show_id).delete(
+        synchronize_session=False
+    )
     db.delete(show)
     db.commit()
