@@ -8,6 +8,7 @@ import { EpisodeEditPage } from './pages/episodes/EpisodeEditPage'
 import { EpisodesPage } from './pages/episodes/EpisodesPage'
 import { LoginPage } from './pages/login/LoginPage'
 import { PublishPage } from './pages/publish/PublishPage'
+import { SeedPreflightPage } from './pages/publish/SeedPreflightPage'
 import { ShowCreatePage } from './pages/shows/ShowCreatePage'
 import { SeasonEpisodesPage } from './pages/episodes/SeasonEpisodesPage'
 import { ShowManagementPage } from './pages/shows/ShowManagementPage'
@@ -34,6 +35,7 @@ export function AppRouter() {
             <Route element={<AdminOnlyRoute />}>
               <Route path="publish" element={<PublishPage />} />
             </Route>
+            <Route path="seed-preflight" element={<SeedPreflightPage />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/admin/login" replace />} />
