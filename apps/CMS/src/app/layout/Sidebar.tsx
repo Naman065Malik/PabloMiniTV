@@ -50,8 +50,11 @@ export function Sidebar() {
 
       <div className="sidebar-footer">
         <div className="user-info">
-          <div className="user-name">{user.email.split('@')[0]}</div>
-          <div className="user-role">{user.role}</div>
+          <div className="user-avatar" aria-hidden="true">{user.email.charAt(0).toUpperCase()}</div>
+          <div className="user-details">
+            <div className="user-name">{user.email.split('@')[0]}</div>
+            <div className="user-role">{user.role}</div>
+          </div>
         </div>
         <button type="button" onClick={logout} className="logout-btn">
           <LogOut size={15} aria-hidden="true" /> <span>Sign out</span>

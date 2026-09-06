@@ -21,6 +21,10 @@ export async function apiFetch<T>(endpoint: string, { token, headers, ...options
 
   if (!response.ok) {
     const errorData: { detail?: string } = await response.json().catch(() => ({}))
+    if (response.status === 401 && !endpoint.endsWith('/auth/login')) {
+      window.localStorage.removeItem('pablo-mini-tv-auth-token')
+      window.location.assign('/admin/login')
+    }
     throw new Error(errorData.detail ?? 'API request failed')
   }
 

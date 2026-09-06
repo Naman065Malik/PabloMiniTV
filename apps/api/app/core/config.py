@@ -12,7 +12,10 @@ class Settings(BaseSettings):
         validation_alias="JWT_SECRET",
     )
     jwt_algorithm: str = "HS256"
-    access_token_expire_minutes: int = 30
+    access_token_expire_minutes: int = Field(
+        default=480,
+        validation_alias="ACCESS_TOKEN_EXPIRE_MINUTES",
+    )
     dev_admin_email: str = "admin@peblo.local"
     dev_admin_password: str = "admin-password"
     dev_editor_email: str = "editor@peblo.local"
