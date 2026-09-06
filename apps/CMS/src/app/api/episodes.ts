@@ -1,0 +1,42 @@
+import { apiFetch } from './client'
+import type { ContentStatus } from './shows'
+
+export interface Season {
+  id: number
+  show_id: number
+  season_number: number
+  title: string | null
+}
+
+export interface Episode {
+  id: number
+  season_id: number
+  title: string | null
+  description: string | null
+  episode_number: number | null
+  duration_seconds: number | null
+  language: string
+  content_group: string
+  status: ContentStatus
+  video_storage_key: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface EpisodeInput {
+  title: string
+  description?: string
+  episode_number?: number
+  duration_seconds?: number
+  language: string
+  content_group: string
+  status?: ContentStatus
+}
+
+function token() { return window.localStorage.getItem('pablo-mini-tv-auth-token') }
+
+export function listSeasons(showId: number) { return apiFetch<Season[]>(`/admin/shows/${showId}/seasons`, { token: token() }) }
+export function listEpisodes(seasonId: number) { return apiFetch<Episode[]>(`/admin/seasons/${seasonId}/episodes`, { token: token() }) }
+export function getEpisode(episodeId: string) { return apiFetch<Episode>(`/admin/episodes/${episodeId}`, { token: token() }) }
+export function createEpisode(seasonId: number, input: EpisodeInput) { return apiFetch<Episode>(`/admin/seasons/${seasonId}/episodes`, { method: 'POST', token: token(), body: JSON.stringify(input) }) }
+export function updateEpisode(episodeId: number, input: Partial<EpisodeInput>) { return apiFetch<Episode>(`/admin/episodes/${episodeId}`, { method: 'PATCH', token: token(), body: JSON.stringify(input) }) }

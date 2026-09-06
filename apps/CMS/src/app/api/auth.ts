@@ -1,0 +1,24 @@
+import { apiFetch } from './client'
+
+export interface AuthToken {
+  access_token: string
+  token_type: string
+}
+
+export interface ApiUser {
+  id: number
+  email: string
+  role: 'admin' | 'editor'
+  is_active: boolean
+}
+
+export function loginRequest(email: string, password: string) {
+  return apiFetch<AuthToken>('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+  })
+}
+
+export function getCurrentUser(token: string) {
+  return apiFetch<ApiUser>('/auth/me', { token })
+}
