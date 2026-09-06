@@ -87,7 +87,7 @@ def validate_show_for_publish(db: Session, show_id: int) -> ValidationResult:
                 errors.append(ValidationIssue("INVALID_EPISODE_STATUS", f"Episode {episode.id} status is not PUBLISHED.", "episode", episode.id, "status"))
             for art_type in (ArtworkType.THUMBNAIL.value,):
                 if not _required_artwork_exists(db, "episode", episode.id, art_type):
-                    errors.append(ValidationIssue("MISSING_ARTWORK", f'Episode "{episode.title}" in show "{show.title}" is missing required {art_type} artwork.', "episode", episode.id, "artwork"))
+                    errors.append(ValidationIssue("MISSING_ARTWORK", f'Episode "{episode.title}" in show "{show.title}" (Season {season.season_number}) is missing required {art_type} artwork.', "episode", episode.id, "artwork"))
 
     return ValidationResult(valid=len(errors) == 0, errors=errors)
 
@@ -114,5 +114,6 @@ def validate_episode_for_publish(db: Session, episode_id: int) -> ValidationResu
     for art_type in (ArtworkType.THUMBNAIL.value,):
         if not _required_artwork_exists(db, "episode", episode.id, art_type):
             show_title = show.title if show else "Unknown show"
-            errors.append(ValidationIssue("MISSING_ARTWORK", f'Episode "{episode.title}" in show "{show_title}" is missing required {art_type} artwork.', "episode", episode.id, "artwork"))
+            season_label = f"Season {season.season_number}" if season else "Unknown season"
+            errors.append(ValidationIssue("MISSING_ARTWORK", f'Episode "{episode.title}" in show "{show_title}" ({season_label}) is missing required {art_type} artwork.', "episode", episode.id, "artwork"))
     return ValidationResult(valid=len(errors) == 0, errors=errors)

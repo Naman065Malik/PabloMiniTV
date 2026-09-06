@@ -14,6 +14,7 @@ import { SeasonEpisodesPage } from './pages/episodes/SeasonEpisodesPage'
 import { ShowManagementPage } from './pages/shows/ShowManagementPage'
 import { ShowEditPage } from './pages/shows/ShowEditPage'
 import { ShowsPage } from './pages/shows/ShowsPage'
+import { UsersPage } from './pages/users/UsersPage'
 
 export function AppRouter() {
   return (
@@ -32,8 +33,9 @@ export function AppRouter() {
             <Route path="episodes" element={<EpisodesPage />} />
             <Route path="episodes/new" element={<EpisodeCreatePage />} />
             <Route path="episodes/:episodeId/edit" element={<EpisodeEditPage />} />
+            <Route path="publish" element={<PublishPage />} />
             <Route element={<AdminOnlyRoute />}>
-              <Route path="publish" element={<PublishPage />} />
+              <Route path="users" element={<UsersPage />} />
             </Route>
             <Route path="seed-preflight" element={<SeedPreflightPage />} />
           </Route>

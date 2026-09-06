@@ -1,4 +1,4 @@
-import { BarChart3, BookOpen, Film, LayoutDashboard, LogOut, Rocket, Tv } from 'lucide-react'
+import { BookOpen, Film, LayoutDashboard, LogOut, Rocket, ShieldCheck, Tv } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 
@@ -9,6 +9,8 @@ const navItems = [
   { icon: Film, label: 'Episodes', href: '/admin/episodes' },
   { section: 'PUBLISHING' },
   { icon: Rocket, label: 'Publish', href: '/admin/publish' },
+  { section: 'ADMINISTRATION', adminOnly: true },
+  { icon: ShieldCheck, label: 'Users', href: '/admin/users', adminOnly: true },
 ]
 
 export function Sidebar() {
@@ -30,8 +32,10 @@ export function Sidebar() {
       <nav className="sidebar-nav" aria-label="CMS navigation">
         {navItems.map((item, index) => {
           if ('section' in item) {
+            if ('adminOnly' in item && item.adminOnly && user.role !== 'admin') return null
             return <div key={item.section} className="nav-section"><span className="section-label">{item.section}</span></div>
           }
+          if ('adminOnly' in item && item.adminOnly && user.role !== 'admin') return null
 
           const Icon = item.icon
           return (

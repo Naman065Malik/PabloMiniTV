@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.api.auth import get_current_user
 from app.core.database import get_db
-from app.core.deps import require_admin
+from app.core.deps import require_admin, require_editor
 from app.models.show import Show
 from app.models.user import User
 from app.models.publish_run import PublishRun, PublishRunStatus, PublishRunShow
@@ -30,13 +30,69 @@ def _fallback_validation_report(db: Session, run: PublishRun) -> list[dict]:
         show_ids = [show.id for show in db.query(Show.id).filter(Show.status == "published").all()]
     for show_id in show_ids:
         issues.extend(validation_service.validate_show_for_publish(db, show_id).errors)
-    return [issue.to_dict() for issue in issues]
+    if run.error_message:
+        import re
+        from app.models.episode import Episode
+        from app.models.season import Season
+        all_shows = db.query(Show).all()
+        affected_show_ids = set()
+        affected_show_names = set(re.findall(r'in show "([^"]+)"', run.error_message))
+        for episode_id in re.findall(r"Episode (\d+) is missing", run.error_message):
+            episode = db.query(Episode).filter(Episode.id == int(episode_id)).first()
+            season = db.query(Season).filter(Season.id == episode.season_id).first() if episode else None
+            if season:
+                affected_show_ids.add(season.show_id)
+        show_candidates = [show for show in all_shows if show.id in affected_show_ids or show.title in affected_show_names] or all_shows[:1]
+        report = []
+        for message in (part.strip() for part in run.error_message.split(";")):
+            episode_match = re.search(r"Episode (\d+) is missing", message)
+            if episode_match:
+                episode = db.query(Episode).filter(Episode.id == int(episode_match.group(1))).first()
+                season = db.query(Season).filter(Season.id == episode.season_id).first() if episode else None
+                show = db.query(Show).filter(Show.id == season.show_id).first() if season else None
+                if episode:
+                    artwork = message.split(" is missing ", 1)[-1].rstrip(".")
+                    report.append({
+                        "code": "MISSING_ARTWORK",
+                        "message": f'Episode "{episode.title}" in show "{show.title if show else "Unknown show"}" (Season {season.season_number if season else "?"}) is missing {artwork}.',
+                        "entity_type": "episode",
+                        "entity_id": episode.id,
+                        "field": "artwork",
+                        "severity": "ERROR",
+                    })
+                    continue
+            if message.startswith("Show is missing"):
+                artwork = message.split("Show is missing ", 1)[-1].rstrip(".")
+                for show in show_candidates:
+                    report.append({
+                        "code": "MISSING_ARTWORK",
+                        "message": f'Show "{show.title}" is missing {artwork}.',
+                        "entity_type": "show",
+                        "entity_id": show.id,
+                        "field": "artwork",
+                        "severity": "ERROR",
+                    })
+        if report:
+            return report
+        if issues:
+            return [issue.to_dict() for issue in issues]
+        return [{
+            "code": "PUBLISH_FAILURE",
+            "message": run.error_message,
+            "entity_type": "catalogue",
+            "entity_id": None,
+            "field": None,
+            "severity": "ERROR",
+        }]
+    if issues:
+        return [issue.to_dict() for issue in issues]
+    return []
 
 
 @router.get("/publish-runs")
 def list_publish_runs(
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_admin),
+    current_user: User = Depends(require_editor),
 ):
     import json
     from app.models.episode import Episode
