@@ -7,15 +7,15 @@ export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   return (
     <header className="sticky top-0 z-50 bg-[rgba(251,251,255,0.92)] backdrop-blur-[16px] w-full">
-      <div className="h-[68px] w-full max-w-[1400px] mx-auto px-6 md:px-10 lg:px-16 xl:px-20 flex items-center gap-6 justify-between">
+      <div className="h-[76px] w-full max-w-[1400px] mx-auto px-6 md:px-10 lg:px-16 xl:px-20 flex items-center gap-6 justify-between">
         <img
           src="/assets/brand-logo.webp"
           alt="Pablo and his dog companion in a playful lavender world"
-          className="block w-[175px] h-auto shrink-0"
+          className="block w-[190px] h-auto shrink-0"
         />
-        <nav aria-label="Main" className="hidden md:flex items-center gap-5 text-sm font-bold text-[#4d27a8]">
-          {["Home","Shows","Learn","Bedtime","Parents"].map((item) => (
-            <a key={item} href="#" className="hover:text-[#aa3bff] transition-colors">{item}</a>
+        <nav aria-label="Main" className="hidden md:flex items-center gap-8 text-[15px] font-bold text-[#51477d]">
+          {["Home", "Shows", "Learn", "Favorites"].map((item, index) => (
+            <a key={item} href={index === 0 ? "#top" : "#"} className={`relative py-2 transition-colors hover:text-[#4d27a8] ${index === 0 ? "text-[#321584] after:absolute after:bottom-[-7px] after:left-1/2 after:h-[3px] after:w-6 after:-translate-x-1/2 after:rounded-full after:bg-[#321584]" : ""}`}>{item}</a>
           ))}
         </nav>
         <div className="flex items-center gap-2">
@@ -26,8 +26,8 @@ export default function Header() {
           >
             {icon("⌕")}
           </button>
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[rgba(255,255,255,0.7)] text-sm font-bold hover:bg-[rgba(255,255,255,1)] shadow-sm" aria-label="Open kids profile">
-            🧒 <span>Kids</span>⌄
+          <button className="flex items-center gap-1.5 rounded-full bg-[#f1efff] px-2 py-1.5 text-sm font-bold text-[#51477d] shadow-sm hover:bg-white" aria-label="Open kids profile">
+            <span className="grid h-7 w-7 place-items-center rounded-full border-2 border-[#ffbd22] bg-[#fff4cb] text-base">🧒</span><span>Kids</span><span aria-hidden="true">⌄</span>
           </button>
           <button
             className="w-10 h-10 rounded-full bg-[rgba(255,255,255,0.7)] hover:bg-[rgba(255,255,255,1)] flex items-center justify-center text-[18px] shadow-sm"
