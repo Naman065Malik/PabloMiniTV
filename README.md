@@ -74,6 +74,31 @@ PabloMiniTV/
 
 ## Getting started
 
+### Run the full stack with Docker
+
+From the repository root:
+
+```bash
+docker compose up --build
+```
+
+Open the applications at:
+
+- CMS: `http://localhost:5173`
+- Viewer: `http://localhost:5174`
+- API docs: `http://localhost:8000/docs`
+
+PostgreSQL is available to host tools on port `5433` by default. Override
+`POSTGRES_PORT`, `CMS_PORT`, or `VIEWER_PORT` when those ports are already in use.
+The Compose database reuses the existing `api_postgres_data` volume, so the
+current PostgreSQL data is available to the API after startup.
+
+Stop the stack with:
+
+```bash
+docker compose down
+```
+
 ### 1. API
 
 From `apps/api`:
