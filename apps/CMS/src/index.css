@@ -135,6 +135,10 @@ a { color: inherit; }
 .quick-actions { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 22px 24px; border-radius: 16px; background: linear-gradient(120deg, #2c2458, #4c4095); color: #fff; box-shadow: 0 12px 30px rgba(47,36,100,.16); }
 .quick-actions h2 { margin: 0; color: #fff; font-size: 15px; font-weight: 750; }
 .quick-actions > div { display: flex; gap: 10px; flex-wrap: wrap; }
+.quick-actions .quick-action-publish { background: #e7f7ee; color: #146c3a; border-color: #b9e5ca; }
+.quick-actions .quick-action-publish:hover { background: #d5f0df; border-color: #9ed7b5; }
+.quick-actions .quick-action-preflight { background: #e7efff; color: #274f9e; border-color: #bfd2f6; }
+.quick-actions .quick-action-preflight:hover { background: #d8e5fc; border-color: #a7c1ee; }
 
 /* ---------- Tables ---------- */
 .table-card.overflow-x-auto { overflow-x: auto; }

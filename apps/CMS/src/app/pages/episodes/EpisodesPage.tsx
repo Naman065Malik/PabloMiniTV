@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Button } from '../../components/ui/Button'
 import { EmptyState } from '../../components/ui/EmptyState'
@@ -12,23 +12,13 @@ export function EpisodesPage() {
   const shows = useShows()
   const urlShow = parseInt(searchParams.get('showId') || '', 10) || ''
   const urlSeason = parseInt(searchParams.get('seasonId') || '', 10) || ''
-  const [showId, setShowId] = useState<number | ''>(urlShow || '')
-  const [seasonId, setSeasonId] = useState<number | ''>(urlSeason || '')
+  const showId = urlShow
+  const seasonId = urlSeason
   const [search, setSearch] = useState('')
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null)
   const seasons = useSeasons(Number(showId) || 0)
   const episodes = useEpisodes(Number(seasonId) || 0)
   const deleteEpisode = useDeleteEpisode()
-
-  useEffect(() => {
-    if (showId) setSearchParams({ showId: String(showId), ...(seasonId ? { seasonId: String(seasonId) } : {}) })
-    else setSearchParams({})
-  }, [showId, seasonId])
-
-  useEffect(() => {
-    if (urlShow && !showId) setShowId(urlShow)
-    if (urlSeason && !seasonId) setSeasonId(urlSeason)
-  }, [urlShow, urlSeason])
 
   const filtered = useMemo(() => {
     if (!episodes.data) return []
@@ -52,14 +42,14 @@ export function EpisodesPage() {
       <div className="flex flex-wrap gap-3 items-end">
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Show</label>
-          <select value={showId} onChange={e => { const v = Number(e.target.value) || ''; setShowId(v); setSeasonId(''); setSearchParams({ showId: v ? String(v) : '' }) }} className="border rounded px-2 py-1 text-sm min-w-[160px]" aria-label="Select show">
+          <select value={showId} onChange={e => { const v = Number(e.target.value) || ''; setSearchParams(v ? { showId: String(v) } : {}) }} className="border rounded px-2 py-1 text-sm min-w-[160px]" aria-label="Select show">
             <option value="">Select a show</option>
             {shows.data?.items.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
           </select>
         </div>
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-1">Season</label>
-          <select value={seasonId} onChange={e => { const v = Number(e.target.value) || ''; setSeasonId(v); setSearchParams(v ? { showId: String(showId), seasonId: String(v) } : { showId: String(showId) }) }} disabled={!showId || seasons.isLoading} className="border rounded px-2 py-1 text-sm min-w-[160px]" aria-label="Select season">
+          <select value={seasonId} onChange={e => { const v = Number(e.target.value) || ''; setSearchParams(v ? { showId: String(showId), seasonId: String(v) } : { showId: String(showId) }) }} disabled={!showId || seasons.isLoading} className="border rounded px-2 py-1 text-sm min-w-[160px]" aria-label="Select season">
             <option value="">Select a season</option>
             {seasons.data?.map(s => <option key={s.id} value={s.id}>{s.season_number === 0 ? 'Trailer Season (Season 0)' : `Season ${s.season_number}`}{s.title ? ` — ${s.title}` : ''}</option>)}
           </select>
